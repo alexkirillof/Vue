@@ -40,6 +40,7 @@ export default {
       this.result = this.op1 / this.op2
       if (this.op2 === 0) {
         this.result = 0
+        this.button.disabled = true
       }
     },
     mult () {
