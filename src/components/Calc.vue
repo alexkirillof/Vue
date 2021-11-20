@@ -50,7 +50,7 @@ export default {
       this.result = this.op1 ** this.op2
     },
     integer () {
-      this.result = this.op1 % this.op2
+      this.result = Math.floor(this.op1 / this.op2)
     }
 
   }
