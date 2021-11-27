@@ -1,9 +1,9 @@
 <template>
   <div :class="$style.wrap">
    <div :class="$style.addpayform">
-      <input type="text" placeholder="Date" v-model="date" :class="$style.input">
-      <input type="text" placeholder="Type" v-model="category" :class="$style.input">
-      <input type="text" placeholder="Amount" v-model="value" :class="$style.input">
+      <input type="date" placeholder="Date" v-model="date" :class="$style.input">
+      <input type="text" :placeholder="categoryPlaceholder" v-model="category" :class="$style.input">
+      <input type="number" :placeholder="valuePlaceholder" v-model="value" :class="$style.input">
       <button @click="addPayment" :class="$style.addpaybtn">Add  +</button>
     </div>
   </div>
@@ -18,14 +18,20 @@ export default {
     return {
       value: '',
       category: '',
-      date: ''
+      date: '',
+      categoryPlaceholder: 'Category',
+      valuePlaceholder: 'Value'
     }
   },
   methods: {
     addPayment () {
       const { date, category, value } = this
       const data = { date: date || this.currentDate, category, value: +value }
-      this.$emit('add-payment', data)
+      if (data.category !== '' && data.value !== 0) {
+        this.$emit('add-payment', data)
+      }
+      this.categoryPlaceholder = 'Enter category !!!'
+      this.valuePlaceholder = 'Enter value !!!'
     }
   },
   computed: {

@@ -27,19 +27,19 @@ export default {
       return [
         {
           id: 1,
-          date: '23.08.2019',
+          date: '2019-08-03',
           category: 'Food',
           value: 185
         },
         {
           id: 2,
-          date: '18.11.2019',
+          date: '2020-11-15',
           category: 'Transport',
           value: 15
         },
         {
           id: 3,
-          date: '05.38.2020',
+          date: '2021-08-02',
           category: 'Food',
           value: 211
         }
@@ -47,7 +47,9 @@ export default {
     },
     addNewPayment (data) {
       const payment = { id: this.paymentsList.length + 1, ...data }
-      this.paymentsList.push(payment)
+      if (data) {
+        this.paymentsList.push(payment)
+      }
     }
   },
   created () {
