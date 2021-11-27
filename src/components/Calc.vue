@@ -11,7 +11,7 @@
        <button @click="division">/</button>
        <button @click="mult">*</button>
        <button @click="deg">^</button>
-       <button @click="int">%</button>
+       <button @click="integer">%</button>
      </div>
   </div>
 </template>
@@ -40,6 +40,7 @@ export default {
       this.result = this.op1 / this.op2
       if (this.op2 === 0) {
         this.result = 0
+        this.button.disabled = true
       }
     },
     mult () {
@@ -48,8 +49,8 @@ export default {
     deg () {
       this.result = this.op1 ** this.op2
     },
-    int () {
-      this.result = this.op1 % this.op2
+    integer () {
+      this.result = Math.floor(this.op1 / this.op2)
     }
 
   }
