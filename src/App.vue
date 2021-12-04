@@ -1,7 +1,11 @@
 <template>
   <div id="app" class="wrap">
     <AddButton class="showbtn" @click="show=!show"> Add new costs  + </AddButton>
-    <AddPaymentForm @add-payment="addNewPayment" v-if="show"/>
+    <AddPaymentForm
+    @add-payment="addNewPayment"
+    v-if="show"
+    :categoryList="categoryList"
+    />
     <PaymentsDisplay :items="paymentsList"/>
   </div>
 </template>
@@ -40,7 +44,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'paymentsList'
+      'paymentsList',
+      'categoryList'
     ])
   },
   created () {

@@ -2,8 +2,18 @@
   <div :class="$style.wrap">
    <div :class="$style.addpayform">
       <input type="date" placeholder="Date" v-model="date" :class="$style.input">
-      <input type="text" :placeholder="categoryPlaceholder" v-model="category" :class="$style.input">
-        <select name="" id="" :class="$style.input">
+        <select name="" id=""
+        v-model="category"
+        :class="$style.input"
+        >
+        <option :value="categoryPlaceholder"
+        disabled selected>
+        {{categoryPlaceholder}}</option>
+          <option
+          v-for="category of categoryList"
+          :key="category"
+          :value="category"
+          >{{category}}</option>
         </select>
       <input type="number" :placeholder="valuePlaceholder" v-model="value" :class="$style.input">
       <button @click="addPayment" :class="$style.addpaybtn">Add  +</button>
@@ -26,7 +36,7 @@ export default {
       value: '',
       category: '',
       date: '',
-      categoryPlaceholder: 'Category',
+      categoryPlaceholder: 'please select',
       valuePlaceholder: 'Value'
     }
   },
