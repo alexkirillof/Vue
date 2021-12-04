@@ -9,6 +9,7 @@
 <script>
 import PaymentsDisplay from './components/PaymentsDisplay.vue'
 import AddPaymentForm from './components/AddPaymentForm.vue'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'App',
@@ -18,43 +19,35 @@ export default {
   },
   data () {
     return {
-      show: false,
-      paymentsList: []
+      show: false
     }
   },
   methods: {
-    fetchData () {
-      return [
-        {
-          id: 1,
-          date: '2019-08-03',
-          category: 'Food',
-          value: 185
-        },
-        {
-          id: 2,
-          date: '2020-11-15',
-          category: 'Transport',
-          value: 15
-        },
-        {
-          id: 3,
-          date: '2021-08-02',
-          category: 'Food',
-          value: 211
-        }
-      ]
-    },
+    ...mapActions([
+      'fetchData',
+      'fetchCategoryListData'
+    ]),
+    ...mapMutations([
+      'ADD_PAYMENT_DATA',
+      'SET_CATEGORY_LIST'
+    ]),
     addNewPayment (data) {
       const payment = { id: this.paymentsList.length + 1, ...data }
       if (data) {
-        this.paymentsList.push(payment)
+        this.ADD_PAYMENT_DATA(payment)
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'paymentsList'
+    ])
+  },
   created () {
-    this.paymentsList = this.fetchData()
-    console.log(this.fetchData())
+    // this.paymentsList = this.fetchData()
+    // console.log(this.fetchData())
+    this.fetchData()
+    this.fetchCategoryListData()
   }
 }
 </script>

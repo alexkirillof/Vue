@@ -3,6 +3,8 @@
    <div :class="$style.addpayform">
       <input type="date" placeholder="Date" v-model="date" :class="$style.input">
       <input type="text" :placeholder="categoryPlaceholder" v-model="category" :class="$style.input">
+        <select name="" id="" :class="$style.input">
+        </select>
       <input type="number" :placeholder="valuePlaceholder" v-model="value" :class="$style.input">
       <button @click="addPayment" :class="$style.addpaybtn">Add  +</button>
     </div>
@@ -13,7 +15,12 @@
 export default {
   name: 'AddPaymentForm',
   components: {},
-  props: {},
+  props: {
+    categoryList: {
+      type: Array,
+      default: () => []
+    }
+  },
   data () {
     return {
       value: '',
@@ -37,7 +44,13 @@ export default {
   computed: {
     currentDate () {
       const d = new Date()
-      const date = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate()
+      const year = d.getFullYear()
+      const month = d.getMonth() + 1
+      let day = d.getDate()
+      if (day < 10) {
+        day = '0' + day
+      }
+      const date = year + '-' + month + '-' + day
       return date
     }
   }
