@@ -22,21 +22,26 @@
           </a>
           </div>
       <input type="number" :placeholder="valuePlaceholder" v-model="value" :class="$style.input">
-      <button @click="addPayment" :class="$style.addpaybtn">Add  +</button>
+      <div :class="$style.btn" @click="addPayment">Add</div>
+      <router-link :class="$style.btn" to="/"> Close Form </router-link>
+      <div :class="$style.addCategory" v-show="showAddForm">
+      <input
+        :class="$style.input"
+        type="text"
+        v-model="newCategory"
+        placeholder="New Category Name"
+      />
+      <div :class="$style.btn" @click="addNewCategory">Add or Close</div>
     </div>
+  </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters, mapMutations } from "vuex";
+
 export default {
   name: 'AddPaymentForm',
-  components: {},
-  props: {
-    categoryList: {
-      type: Array,
-      default: () => []
-    }
-  },
   data () {
     return {
       value: '',
@@ -45,6 +50,7 @@ export default {
       categoryPlaceholder: 'please select',
       valuePlaceholder: 'Value',
       showAddForm: false,
+      newCategory: ""
     }
   },
   methods: {
