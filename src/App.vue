@@ -1,29 +1,34 @@
 <template>
-  <div id="app" class="wrap">
-    <AddButton class="showbtn" @click="show=!show"> Add new costs  + </AddButton>
-    <AddPaymentForm
-    @add-payment="addNewPayment"
-    v-if="show"
-    :categoryList="categoryList"
-    />
-    <PaymentsDisplay :items="paymentsList"/>
+  <div id="app" :class="$style.wrap">
+    <header></header>
+    <main>
+      <div :class="$style.wrap">
+        <router-link :class="$style.showbtn" :to="{ name: 'addpayment' }" @click="show=!show">
+          Add New Cost  +
+        </router-link>
+        <router-view @add-payment="addNewPayment" />
+        <PaymentsDisplay :items="paymentsList" />
+      </div>
+    </main>
+    <footer></footer>
+    <!-- <AddPaymentForm @add-payment="addNewPayment" v-if="show" :categoryList="categoryList"/> -->
   </div>
 </template>
 
 <script>
 import PaymentsDisplay from './components/PaymentsDisplay.vue'
-import AddPaymentForm from './components/AddPaymentForm.vue'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
   name: 'App',
   components: {
-    PaymentsDisplay,
-    AddPaymentForm
+    PaymentsDisplay
   },
   data () {
     return {
-      show: false
+      show: false,
+      addMessage: "Add New Cost",
+      currentPage: 1
     }
   },
   methods: {
@@ -37,9 +42,8 @@ export default {
     ]),
     addNewPayment (data) {
       const payment = { id: this.paymentsList.length + 1, ...data }
-      if (data) {
-        this.ADD_PAYMENT_DATA(payment)
-      }
+       if (payment.category != "" && payment.value != "") {
+        this.addPayment(payment);
     }
   },
   computed: {
@@ -55,9 +59,10 @@ export default {
     this.fetchCategoryListData()
   }
 }
+}
 </script>
 
-<style lang="scss">
+<style lang="scss" module>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -72,6 +77,7 @@ export default {
    padding: 0;
 }
 .showbtn{
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   color: #fff;
   float: left;
   max-width: 300px;

@@ -1,7 +1,8 @@
 <template>
   <div :class="$style.wrap">
-   <div :class="$style.addpayform">
+   <div :class="$style.addpayform" v-show="!showAddForm">
       <input type="date" placeholder="Date" v-model="date" :class="$style.input">
+       <div :class="$style.categoryControl">
         <select name="" id=""
         v-model="category"
         :class="$style.input"
@@ -15,6 +16,11 @@
           :value="category"
           >{{category}}</option>
         </select>
+        <a :class="$style.addCategoryLink"
+          @click="showAddForm = !showAddForm"
+          >Add Category +
+          </a>
+          </div>
       <input type="number" :placeholder="valuePlaceholder" v-model="value" :class="$style.input">
       <button @click="addPayment" :class="$style.addpaybtn">Add  +</button>
     </div>
@@ -37,7 +43,8 @@ export default {
       category: '',
       date: '',
       categoryPlaceholder: 'please select',
-      valuePlaceholder: 'Value'
+      valuePlaceholder: 'Value',
+      showAddForm: false,
     }
   },
   methods: {
@@ -101,5 +108,8 @@ export default {
   &:hover {
      background-color:#a0e9c8;
   }
+  .categoryControl {
+  display: flex;
+}
 }
 </style>
