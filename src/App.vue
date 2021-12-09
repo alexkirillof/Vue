@@ -1,47 +1,60 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App" :isShow="true"/>
-    <!-- <button @click="increase(2,$event)">Increapse</button>
-    <button @click="reset">reset</button>
-     {{counter}} -->
-     <Calc/>
+  <div id="app" class="wrap">
+    <AddButton class="showbtn" @click="show=!show"> Add new costs  + </AddButton>
+    <AddPaymentForm @add-payment="addNewPayment" v-if="show"/>
+    <PaymentsDisplay :items="paymentsList"/>
   </div>
- </template>
+</template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-import Calc from '@/components/Calc.vue'
+import PaymentsDisplay from './components/PaymentsDisplay.vue'
+import AddPaymentForm from './components/AddPaymentForm.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld,
-    Calc
+    PaymentsDisplay,
+    AddPaymentForm
   },
   data () {
     return {
-      counter: 0,
-      str: 'Hellow'
+      show: false,
+      paymentsList: []
     }
   },
   methods: {
-    increase (step, event) {
-      console.log(event)
-      this.counter += step
+    fetchData () {
+      return [
+        {
+          id: 1,
+          date: '2019-08-03',
+          category: 'Food',
+          value: 185
+        },
+        {
+          id: 2,
+          date: '2020-11-15',
+          category: 'Transport',
+          value: 15
+        },
+        {
+          id: 3,
+          date: '2021-08-02',
+          category: 'Food',
+          value: 211
+        }
+      ]
     },
-    reset () {
-      this.counter = 0
-    },
-    input (event) {
-      console.log(event.target.value)
-    },
-    blur () {
-      console.log(blur)
-    },
-    focus () {
-      console.log(focus)
+    addNewPayment (data) {
+      const payment = { id: this.paymentsList.length + 1, ...data }
+      if (data) {
+        this.paymentsList.push(payment)
+      }
     }
+  },
+  created () {
+    this.paymentsList = this.fetchData()
+    console.log(this.fetchData())
   }
 }
 </script>
@@ -55,7 +68,24 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-button{
-  margin-left: 20px;
+.wrap{
+  max-width: 900px;
+   margin: 0 auto;
+   padding: 0;
 }
+.showbtn{
+  color: #fff;
+  float: left;
+  max-width: 300px;
+  font-size: 20px;
+  background-color:#2aa694;
+  padding: 5px 15px;
+  border: 0;
+  cursor: pointer;
+  margin-bottom: 20px;
+  &:hover {
+     background-color:#a0e9c8;
+  }
+}
+
 </style>
