@@ -39,7 +39,7 @@ export default {
 .form {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
+  gap: 350px;
   width: 100%;
 }
 .input {
