@@ -1,14 +1,14 @@
 <template>
   <form :class="$style.form">
     <input :class="$style.input" type="text" placeholder="Payment category" v-model="category" />
-    <custom-button :class="$style.closeButton" @click="add" add> Add </custom-button>
-    <custom-button :class="$style.addButton" @click="$emit('close')">Close </custom-button>
+    <button :class="$style.addpaybtn" @click="add" type="button"> Add +</button>
+    <button :class="$style.addpaybtn" @click="$emit('close')" type="button">Close </button>
   </form>
 </template>
 
 <script>
 import { mapState, mapMutations } from 'vuex';
-import CustomButton from './CustomButton.vue';
+// import CustomButton from './CustomButton.vue';
 export default {
   name: 'AddCategoryForm',
   data() {
@@ -30,7 +30,6 @@ export default {
     },
   },
   components: {
-    CustomButton,
   },
 };
 </script>
@@ -44,23 +43,28 @@ export default {
 }
 .input {
   grid-column: 1/3;
-  padding: 0.5em 1em;
-  font-size: 1.25rem;
+  padding: 5px 10px;
+  font-size: 24px;
   color: #2c3e50;
   border: 1px solid #c2c2c2;
-  border-radius: 0.5em;
   background-color: #fff;
   &:focus {
     border: 1px solid #2aa694;
     outline: 1px solid #2aa694;
   }
 }
-.closeButton {
-  grid-column: 1/2;
-  grid-row: 2;
-}
-.addButton {
-  grid-column: 2/3;
-  grid-row: 2;
+.addpaybtn{
+  align-self: flex-end;
+  color: #fff;
+  max-width: 400px;
+  font-size: 20px;
+  background-color:#2aa694;
+  padding: 5px 3px;
+  margin-bottom: 30px;
+  border: 0;
+  cursor: pointer;
+  &:hover {
+     background-color:#a0e9c8;
+  }
 }
 </style>

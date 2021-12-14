@@ -1,12 +1,7 @@
 <template>
   <nav :class="$style.pagination">
     <button :class="$style.button" @click="setPrevPage">
-      <svg :class="$style.icon" viewBox="0 0 13 23" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M12.6998 3.7499L4.9498 11.4999L12.6998 19.2499L11.1498 22.3499L0.299805
-          11.4999L11.1498 0.649902L12.6998 3.7499Z"
-        />
-      </svg>
+      
     </button>
     <button
       :class="{ [$style.current]: isCurrentPage(button), [$style.button]: true }"
@@ -17,13 +12,7 @@
       {{ button }}
     </button>
     <button :class="$style.button" @click="setNextPage">
-      <svg :class="$style.icon" viewBox="0 0 13 23" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M12.6998 3.7499L4.9498 11.4999L12.6998 19.2499L11.1498 22.3499L0.299805
-          11.4999L11.1498 0.649902L12.6998 3.7499Z"
-          transform="rotate(180 6.5 11.5)"
-        />
-      </svg>
+     
     </button>
   </nav>
 </template>

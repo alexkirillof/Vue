@@ -15,89 +15,132 @@
           :value="category"
           >{{category}}</option>
         </select>
-      <input type="number" :placeholder="valuePlaceholder" v-model="value" :class="$style.input">
-      <button @click="addPayment" :class="$style.addpaybtn">Add  +</button>
+      <input type="number" :placeholder="valuePlaceholder" v-model.number="amount" :class="$style.input">
+      <button @click="addPayment" :class="$style.showbtn">Add  +</button>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  mapState,
+  mapGetters,
+  mapMutations,
+  mapActions,
+} from 'vuex';
 export default {
   name: 'AddPaymentForm',
-  components: {},
-  props: {
-    categoryList: {
-      type: Array,
-      default: () => []
-    }
-  },
-  data () {
+  data() {
     return {
-      value: '',
       category: '',
+      amount: '',
       date: '',
-      categoryPlaceholder: 'please select',
-      valuePlaceholder: 'Value'
-    }
-  },
-  methods: {
-    addPayment () {
-      const { date, category, value } = this
-      const data = { date: date || this.currentDate, category, value: +value }
-      if (data.category !== '' && data.value !== 0) {
-        this.$emit('add-payment', data)
-      }
-      this.categoryPlaceholder = 'Enter category !!!'
-      this.valuePlaceholder = 'Enter value !!!'
-    }
+    };
   },
   computed: {
-    currentDate () {
-      const d = new Date()
-      const year = d.getFullYear()
-      const month = d.getMonth() + 1
-      let day = d.getDate()
-      if (day < 10) {
-        day = '0' + day
+    ...mapState(['categoryList']),
+    ...mapGetters(['pageCount', 'getPageByNumber']),
+    currentDate() {
+      const date = new Date();
+      return date.toLocaleDateString();
+    },
+  },
+  methods: {
+    ...mapMutations(['addPageData', 'addPage', 'setCurrentPageNumber']),
+    ...mapActions(['fetchData', 'fetchPageCount']),
+    addPayment() {
+      const {
+        getPageByNumber,
+        addPage,
+        addPageData,
+        fetchData,
+        fetchPageCount,
+      } = this;
+      fetchPageCount()
+        .then((lastPageNumber) => fetchData(lastPageNumber))
+        .then(() => {
+          const {
+            pageCount,
+            category,
+            amount,
+            date,
+            currentDate,
+          } = this;
+          const lastPage = getPageByNumber(pageCount);
+          const dataLength = lastPage.data.length;
+          const lastItemId = lastPage.data[dataLength - 1].id;
+          const data = {
+            id: lastItemId + 1,
+            category,
+            amount: Number(amount),
+            date: date || currentDate,
+          };
+          if (dataLength < 5) {
+            addPageData({ number: pageCount, data });
+          } else {
+            addPage({ number: pageCount + 1, data: [data] });
+          }
+          return this.$router.push(
+            {
+              name: 'addPayment',
+              params: { page: this.pageCount, category },
+              query: { value: amount },
+            },
+          ).catch(() => {});
+        });
+    },
+  },
+  mounted() {
+    const { $route: { name, params: { category }, query: { value } } } = this;
+    if (name === 'addPayment') {
+      if (category) {
+        this.category = category;
       }
-      const date = year + '-' + month + '-' + day
-      return date
+      if (value) {
+        this.amount = value;
+      }
+      this.date = this.currentDate;
+      if (category && value) {
+        this.addPayment();
+      }
     }
-  }
-}
+  },
+};
 </script>
 
-<style lang="scss" module>
-.wrap {
-  max-width: 900px;
-  margin: 0 auto;
-}
+<style module lang="scss">
 .addpayform {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  clear: both;
+  gap: 1.25rem;
 }
 .input {
-  padding: 5px 10px;
-  font-size: 20px;
-  color: #a2b1a3;
-  border-top:0;
-  border-left: 0;
-  border-right: 0;
-  border-bottom: 2px solid #c4cfc4;
-;
+  padding: 0.5em 1em;
+  font-size: 1.25rem;
+  color: #2c3e50;
+  border: 1px solid #c2c2c2;
+  border-radius: 0.5em;
+  background-color: #fff;
+  &:focus {
+    border: 1px solid #2aa694;
+    outline: 1px solid #2aa694;
+  }
 }
-.addpaybtn{
+.button {
   align-self: flex-end;
+  max-width: 150px;
+}
+.showbtn{
   color: #fff;
+  float: left;
   max-width: 300px;
-  font-size: 30px;
+  font-size: 20px;
   background-color:#2aa694;
   padding: 5px 15px;
-  margin-bottom: 30px;
   border: 0;
   cursor: pointer;
+  margin-bottom: 20px;
   &:hover {
      background-color:#a0e9c8;
   }

@@ -38,9 +38,12 @@ export default {
 
 <style module lang="scss">
 .wrapper {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
   display: flex;
+  justify-content: center;
   flex-direction: column;
   min-height: 100vh;
+  margin: 0 auto;
 }
 .header {
   flex: 0 0 auto;

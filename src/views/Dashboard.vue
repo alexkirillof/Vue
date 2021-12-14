@@ -1,14 +1,14 @@
 <template>
   <div :class="$style.content">
-    <custom-button :class="$style.button" @click="changeFormVisibility" add>
-      Add new costs
-    </custom-button>
-    <div :class="$style.formWrapper" v-if="isFormVisible">
-     <add-payment-form v-if="isAddPaymentVisible" />
-      <custom-button v-if="isAddPaymentVisible" @click="switchForm">
+    <button :class="$style.showbtn" @click="show=!show"  type="button">
+      Add new costs  + 
+    </button>
+    <div :class="$style.formWrapper" v-if="show">
+     <add-payment-form v-if="showpay" />
+      <button v-if="showpay" @click="toggleForm" type="button" :class="[$style.showbtn, $style.top]">
         Add category
-      </custom-button>
-      <add-category-form v-if="isAddCategoryVisible" @close="switchForm" />
+      </button>
+      <add-category-form v-if="showcat" @close="toggleForm" />
     </div>
     <payments-list :class="$style.list" :items="currentPageData" />
   </div>
@@ -28,9 +28,9 @@ export default {
   name: 'App',
   data() {
     return {
-      isFormVisible: false,
-      isAddPaymentVisible: true,
-      isAddCategoryVisible: false,
+      showpay: true,
+      showcat: false,
+      show: false
     };
   },
   computed: {
@@ -45,13 +45,10 @@ export default {
   methods: {
     ...mapMutations(['setCurrentPageNumber', 'addPage', 'initPages']),
     ...mapActions(['fetchPageCount', 'fetchData', 'fetchCategory']),
-    changeFormVisibility() {
-      this.isFormVisible = !this.isFormVisible;
-    },
-    switchForm() {
-      this.isAddPaymentVisible = !this.isAddPaymentVisible;
-      this.isAddCategoryVisible = !this.isAddCategoryVisible;
-    },
+     toggleForm() {
+       this.showpay = !this.showpay;
+       this.showcat = !this.showcat;
+     },
   },
   created() {
     this.fetchPageCount()
@@ -109,9 +106,22 @@ export default {
 .list {
   grid-column: 1;
 }
-.button {
-  min-width: 230px;
-  justify-self: flex-start;
-  grid-column: 1;
+.showbtn{
+  color: #fff;
+  float: left;
+  max-width: 300px;
+  font-size: 20px;
+  background-color:#2aa694;
+  padding: 5px 15px;
+  border: 0;
+  cursor: pointer;
+  margin-bottom: 20px;
+  &:hover {
+     background-color:#a0e9c8;
+  }
 }
+.top{
+  margin-top: 75px;
+}
+
 </style>

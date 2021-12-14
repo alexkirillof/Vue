@@ -1,42 +1,58 @@
 <template>
-<div>
-  <div :class="$style.wrapper">
+  <div>
+    <div :class="$style.wrapper">
       <table :class="$style.list">
         <thead>
           <tr>
             <th>#</th>
+            <th>Description</th>
             <th>Date</th>
-            <th>Category</th>
-            <th>Value</th>
+            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="item in items" :key="item.id">
             <td>{{ item.id }}</td>
-            <td>{{ item.date }}</td>
             <td>{{ item.category }}</td>
-            <td>{{ item.value }}</td>
+            <td>{{ item.date }}</td>
+            <td>{{ item.amount }}</td>
           </tr>
         </tbody>
       </table>
     </div>
-</div>
+    <custom-pagination :class="$style.pagination" :buttonsDisplayedCount="5" />
+  </div>
 </template>
 
 <script>
+import CustomPagination from './CustomPagination.vue';
 export default {
-  name: 'PaymentsDisplay',
+  name: 'PaymentsList',
+  components: {
+    CustomPagination,
+  },
   props: {
     items: {
       type: Array,
-      required: true
-      // default: () => []
-    }
-  }
-}
+      default: () => [],
+      validator(items) {
+        return items.every((item) => {
+          if ('id' in item && 'date' in item && 'category' in item && 'amount' in item) {
+            const idValid = typeof item.id === 'number';
+            const dateValid = typeof item.date === 'string';
+            const categoryValid = typeof item.category === 'string';
+            const amountValid = typeof item.amount === 'number';
+            return idValid && dateValid && categoryValid && amountValid;
+          }
+          return false;
+        });
+      },
+    },
+  },
+};
 </script>
 
-<style lang="scss" module>
+<style module lang="scss">
 .wrapper {
   width: 100%;
   overflow-x: auto;
