@@ -8,7 +8,6 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
-// import CustomButton from './CustomButton.vue';
 export default {
   name: 'AddCategoryForm',
   data() {
@@ -36,8 +35,7 @@ export default {
 
 <style module lang="scss">
 .form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
   gap: 350px;
   width: 100%;
 }

@@ -29,7 +29,7 @@ import {
   mapActions,
 } from 'vuex';
 export default {
-  name: 'AddPaymentForm',
+  name: 'PartAddPaymentForm',
   data() {
     return {
       category: '',
@@ -110,18 +110,16 @@ export default {
 
 <style module lang="scss">
 .addpayform {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 20px
 }
 .input {
-  padding: 0.5em 1em;
-  font-size: 1.25rem;
+  padding: 5px 10px;
+  font-size: 24px;
   color: #2c3e50;
   border: 1px solid #c2c2c2;
-  border-radius: 0.5em;
-  background-color: #fff;
+  background-color: rgb(245, 239, 239);
   &:focus {
     border: 1px solid #2aa694;
     outline: 1px solid #2aa694;
@@ -134,7 +132,7 @@ export default {
 .showbtn{
   color: #fff;
   float: left;
-  max-width: 300px;
+  max-width: 314px;
   font-size: 20px;
   background-color:#2aa694;
   padding: 5px 15px;

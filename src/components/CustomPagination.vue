@@ -1,7 +1,6 @@
 <template>
   <nav :class="$style.pagination">
-    <button :class="$style.button" @click="setPrevPage">
-      
+    <button :class="$style.button" @click="setPrevPage"> 
     </button>
     <button
       :class="{ [$style.current]: isCurrentPage(button), [$style.button]: true }"
@@ -11,8 +10,7 @@
     >
       {{ button }}
     </button>
-    <button :class="$style.button" @click="setNextPage">
-     
+    <button :class="$style.button" @click="setNextPage"> 
     </button>
   </nav>
 </template>
@@ -106,32 +104,12 @@ export default {
 <style module lang="scss">
 .pagination {
   display: flex;
-  font-size: 1.25rem;
+  font-size: 16px;
   justify-content: center;
-  border: 0.05em solid #c2c2c2;
 }
-.button {
-  display: flex;
-  align-items: center;
-  padding: 0.5em 0.6em;
-  font-size: 1.125rem;
-  color: #2c3e50;
-  border: none;
-  background-color: #fff;
-  transition: color 0.2s;
-  &:hover {
-    color: #2aa694;
-    & .icon {
-      fill: #2aa694;
-    }
-  }
-}
-.icon {
-  width: 0.45em;
-  fill: #2c3e50;
-  transition: fill 0.2s;
-}
-.current {
-  color: #2aa694;
+.button{
+  border:0;
+  font-size: 24px;
+  margin-top: 30px;
 }
 </style>

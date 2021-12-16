@@ -59,7 +59,7 @@ export default {
 }
 .list {
   width: 100%;
-  font-size: 1.25rem;
+  font-size: 24px;
   border-collapse: collapse;
   & thead {
     color: #fff;
@@ -78,7 +78,7 @@ export default {
   }
   & th,
   td {
-    padding: 0.5em;
+    padding: 5px;
     text-align: center;
   }
 }
