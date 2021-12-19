@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.wrap">
-   <div :class="$style.addpayform">
+     <form :class="$style.form" v-if="showPaymentForm">
       <input type="date" placeholder="Date" v-model="date" :class="$style.input">
         <select name="" id=""
         v-model="category"
@@ -17,7 +17,8 @@
         </select>
       <input type="number" :placeholder="valuePlaceholder" v-model.number="amount" :class="$style.input">
       <button @click="addPayment" :class="$style.showbtn">Add  +</button>
-    </div>
+      </form>
+      <add-category-form v-if="showCategoryForm" @close="closeCategoryForm" />
   </div>
 </template>
 
@@ -29,16 +30,23 @@ import {
   mapActions,
 } from 'vuex';
 export default {
-  name: 'AddPaymentForm',
+  name: 'PartAddPaymentForm',
+  components: {
+    AddCategoryForm: () => import(
+      /* webpackChunkName: "AddCategoryForm" */ './AddCategoryForm.vue'
+    ),
+  },
   data() {
     return {
       category: '',
-      amount: '',
+      amount: null,
       date: '',
+      showPaymentForm: true,
+      showCategoryForm: false,
     };
   },
   computed: {
-    ...mapState(['categoryList']),
+    ...mapState(['categoryList', 'itemsPerPage']),
     ...mapGetters(['pageCount', 'getPageByNumber']),
     currentDate() {
       const date = new Date();
@@ -60,6 +68,7 @@ export default {
         .then((lastPageNumber) => fetchData(lastPageNumber))
         .then(() => {
           const {
+            itemsPerPage,
             pageCount,
             category,
             amount,
@@ -75,7 +84,7 @@ export default {
             amount: Number(amount),
             date: date || currentDate,
           };
-          if (dataLength < 5) {
+          if (dataLength < itemsPerPage) {
             addPageData({ number: pageCount, data });
           } else {
             addPage({ number: pageCount + 1, data: [data] });
@@ -88,6 +97,14 @@ export default {
             },
           ).catch(() => {});
         });
+    },
+     openCategoryForm() {
+      this.showPaymentForm = false;
+      this.showCategoryForm = true;
+    },
+    closeCategoryForm() {
+      this.showPaymentForm = true;
+      this.showCategoryForm = false;
     },
   },
   mounted() {
@@ -110,18 +127,16 @@ export default {
 
 <style module lang="scss">
 .addpayform {
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 20px
 }
 .input {
-  padding: 0.5em 1em;
-  font-size: 1.25rem;
+  padding: 5px 10px;
+  font-size: 24px;
   color: #2c3e50;
   border: 1px solid #c2c2c2;
-  border-radius: 0.5em;
-  background-color: #fff;
+  background-color: rgb(245, 239, 239);
   &:focus {
     border: 1px solid #2aa694;
     outline: 1px solid #2aa694;
@@ -134,7 +149,7 @@ export default {
 .showbtn{
   color: #fff;
   float: left;
-  max-width: 300px;
+  max-width: 314px;
   font-size: 20px;
   background-color:#2aa694;
   padding: 5px 15px;

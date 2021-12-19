@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Dashboard from '../views/Dashboard.vue';
-import About from '../views/About.vue';
-import NotFound from '../views/NotFound.vue';
-import Layouts from '../views/Layouts.vue';
+// import Dashboard from '../views/Dashboard.vue';
+// import About from '../views/About.vue';
+// import NotFound from '../views/NotFound.vue';
+// import Layouts from '../views/Layouts.vue';
 
 
 Vue.use(Router);
@@ -27,11 +27,16 @@ const router = new Router({
         },
         {
             path: '/dashboard',
-            component: Layouts,
+            component: () =>
+                import (
+                    /* webpackChunkName: "Layouts" */
+                    '../views/Layouts.vue'
+                ),
             children: [{
                 path: ':view',
                 name: 'dashboardPage',
-                component: Dashboard,
+                component: () =>
+                    import ( /* webpackChunkName: "Dashboard" */ '../views/Dashboard.vue'),
                 children: [{
                     path: 'add/payment/:category',
                     name: 'addPayment',
@@ -40,17 +45,23 @@ const router = new Router({
         },
         {
             path: '/about',
-            component: Layouts,
+            component: () =>
+                import (
+                    /* webpackChunkName: "Layouts" */
+                    '../views/Layouts.vue'
+                ),
             children: [{
                 path: '',
                 name: 'about',
-                component: About,
+                component: () =>
+                    import ( /* webpackChunkName: "About" */ '../views/About.vue'),
             }, ],
         },
         {
             path: '/404',
             name: 'notFound',
-            component: NotFound,
+            component: () =>
+                import ( /* webpackChunkName: "NotFound" */ '../views/NotFound.vue'),
         },
         {
             path: '*',

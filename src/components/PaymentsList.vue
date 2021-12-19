@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :class="$style.wrapper">
+    <div>
       <table :class="$style.list">
         <thead>
           <tr>
@@ -8,6 +8,7 @@
             <th>Description</th>
             <th>Date</th>
             <th>Amount</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -16,6 +17,13 @@
             <td>{{ item.category }}</td>
             <td>{{ item.date }}</td>
             <td>{{ item.amount }}</td>
+            <td :class="$style.menu">
+              <modal-menu :id="item.id "
+                          :show="isCurrentModalMenu(item.id)"
+                          @toggle-display="setCurrentModalMenuId"
+                          @delete-item="deleteItem"
+              />
+            </td>
           </tr>
         </tbody>
       </table>
@@ -25,11 +33,14 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import CustomPagination from './CustomPagination.vue';
+import ModalMenu from './ModalMenu.vue';
 export default {
   name: 'PaymentsList',
   components: {
     CustomPagination,
+    ModalMenu,
   },
   props: {
     items: {
@@ -49,14 +60,33 @@ export default {
       },
     },
   },
+  data() {
+    return {
+      currentModalMenuId: 0,
+    };
+  },
+  methods: {
+    ...mapActions(['deletePageData']),
+    setCurrentModalMenuId(id) {
+      const { isCurrentModalMenu } = this;
+      if (isCurrentModalMenu(id)) {
+        this.currentModalMenuId = 0;
+      } else {
+        this.currentModalMenuId = id;
+      }
+    },
+    isCurrentModalMenu(id) {
+      return this.currentModalMenuId === id;
+    },
+    deleteItem(id) {
+      this.currentModalMenuId = 0;
+      this.deletePageData(id);
+    },
+  },
 };
 </script>
 
 <style module lang="scss">
-.wrapper {
-  width: 100%;
-  overflow-x: auto;
-}
 .list {
   width: 100%;
   font-size: 1.25rem;
@@ -81,5 +111,8 @@ export default {
     padding: 0.5em;
     text-align: center;
   }
+}
+.menu {
+  width: min-content;
 }
 </style>

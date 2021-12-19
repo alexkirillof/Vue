@@ -47,8 +47,8 @@ export default {
 }
 .header {
   flex: 0 0 auto;
-  margin-bottom: 4rem;
   background-color: #377D73 ;
+  margin-bottom: 50px;
 }
 .content {
   flex: 1 1 auto;
@@ -73,8 +73,8 @@ export default {
 }
 .menuButton {
   display: block;
-  padding: 0.8em;
-  font-size: 1.25rem;
+  padding: 5px 15px;
+  font-size: 24px;
   line-height: 1.2;
   color: #fff;
   text-decoration: none;

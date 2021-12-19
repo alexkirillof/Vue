@@ -7,6 +7,7 @@ Vue.use(Vuex);
 const state = () => ({
     paymentsList: [],
     currentPageNumber: 0,
+    itemsPerPage: 5,
     categoryList: [],
 });
 
@@ -55,6 +56,15 @@ const mutations = {
     initPages(state, payload) {
         state.paymentsList = [...Array(payload).keys()].map((i) => ({ number: i + 1, data: [] }));
     },
+    deletePage(state, payload) {
+        const index = state.paymentsList.findIndex((item) => item.number === payload);
+        state.paymentsList.splice(index, 1);
+    },
+    editPageData(state, payload) {
+        const page = state.paymentsList.find((page) => page.number === payload.page);
+        const index = page.data.findIndex((payment) => payment.id === payload.data.id);
+        Vue.set(page.data, index, {...payload.data });
+    },
 };
 
 const actions = {
@@ -88,6 +98,39 @@ const actions = {
                 setTimeout(() => resolve(['Food', 'Transport', 'Education', 'Entertainment']), 1000);
             }
         }).then((categoryList) => commit('setCategoryList', categoryList));
+    },
+    deletePageData({
+        dispatch,
+        commit,
+        state,
+        getters,
+    }, id, ) {
+        const index = state.paymentsList.findIndex((item) => item.number === state.currentPageNumber);
+        const editPages = state.paymentsList.slice(index);
+        return Promise.all(editPages.map((page) => dispatch('fetchData', page.number)))
+            .then(() => {
+                const editData = [];
+                for (let i = state.currentPageNumber; i <= getters.pageCount; i += 1) {
+                    editData.push(...getters.getPageByNumber(i).data);
+                }
+                const index = editData.findIndex((item) => item.id === id);
+                editData.splice(index, 1);
+                return editData;
+            })
+            .then((items) => {
+                for (
+                    let i = 0, page = state.currentPageNumber; i <= items.length; i += state.itemsPerPage, page += 1
+                ) {
+                    commit('setPageData', { number: page, data: items.slice(i, i + state.itemsPerPage) });
+                }
+                if (getters.isDataEmpty(getters.pageCount)) {
+                    commit('deletePage', getters.pageCount);
+                    if (state.currentPageNumber > getters.pageCount) {
+                        dispatch('fetchData', getters.pageCount);
+                        commit('setCurrentPageNumber', getters.pageCount);
+                    }
+                }
+            });
     },
 };
 
