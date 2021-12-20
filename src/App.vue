@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App" :isShow="true"/>
+    <HelloWorld msg="Калькулятор" :isShow="true"/>
     <!-- <button @click="increase(2,$event)">Increapse</button>
     <button @click="reset">reset</button>
      {{counter}} -->
@@ -12,7 +12,6 @@
 <script>
 import HelloWorld from './components/HelloWorld.vue'
 import Calc from '@/components/Calc.vue'
-
 export default {
   name: 'App',
   components: {
@@ -55,7 +54,19 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
-button{
-  margin-left: 20px;
+.keybtns{
+  display: flex;
+  justify-content: center;
+  gap:10px;
 }
+button{
+   font-weight: 700;
+   width: 30px;
+   height: 30px;
+   text-align: center;
+   align-items: center;
+   border:1px solid;
+   border-radius: 15px;
+   margin-left: 15px;
+ }
 </style>
