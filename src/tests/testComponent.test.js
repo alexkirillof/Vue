@@ -8,6 +8,6 @@ describe('TestComponent testing', () => {
         message: 'New Test massage'
       }
     })
-    console.log(wrapper)
+    expect(wrapper.html()).toContain('Test massage is')
   })
 })

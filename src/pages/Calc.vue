@@ -1,8 +1,8 @@
 <template>
  <div>
    <div class="calc-top">
-      <input type="number" v-model.number="op1" >
-      <input type="number" v-model.number="op2" >
+      <input type="number" v-model.number="op1" name="op1">
+      <input type="number" v-model.number="op2" name="op2">
       = {{result}}
     <div class="error" v-if="error">
       {{error}}
@@ -17,6 +17,7 @@
        <button v-for="operation of operations"
        @click="calculate(operation)"
        :key="operation"
+       :name="operations"
        >{{operation}}</button>
      </div>
   <div class="keyboard-check">
@@ -80,7 +81,7 @@ export default {
       op2: 0,
       result: 0,
       error: '',
-      operations: ['+', '-', '/', '*', '^', '%'],
+      operations: ['+', '-', '/', '*', '**', '%'],
       Keyboards: [{ char: '0', title: '0' },
         { char: '1', title: '1' },
         { char: '2', title: '2' },
@@ -130,7 +131,7 @@ export default {
         case '-': this.diff(); break
         case '/': this.division(); break
         case '*': this.mult(); break
-        case '^': this.deg(); break
+        case '**': this.deg(); break
         case '%': this.integer(); break
       }
     },

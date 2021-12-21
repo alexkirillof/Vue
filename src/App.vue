@@ -11,7 +11,7 @@
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
-import Calc from '@/components/Calc.vue'
+import Calc from './pages/Calc.vue'
 export default {
   name: 'App',
   components: {

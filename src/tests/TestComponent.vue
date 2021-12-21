@@ -9,7 +9,7 @@ export default {
   name: 'TestComponent',
   components: {},
   props: {
-    message: String,
+    message: String
   },
   data () {
     return {}
