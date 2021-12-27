@@ -1,0 +1,8 @@
+[
+    { "id": 1, "date": "2021-11-10", "category": "Food", "amount": 232 },
+    { "id": 2, "date": "2021-11-26", "category": "Education", "amount": 673 },
+    { "id": 3, "date": "2021-11-30", "category": "Transport", "amount": 55 },
+    { "id": 4, "date": "2021-12-08", "category": "Entertainment", "amount": 568 },
+    { "id": 5, "date": "2021-12-13", "category": "Housing", "amount": 432 }
+
+]

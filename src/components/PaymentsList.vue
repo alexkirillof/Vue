@@ -1,45 +1,27 @@
 <template>
   <div>
-    <div>
-      <table :class="$style.list">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Description</th>
-            <th>Date</th>
-            <th>Amount</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in items" :key="item.id">
-            <td>{{ item.id }}</td>
-            <td>{{ item.category }}</td>
-            <td>{{ item.date }}</td>
-            <td>{{ item.amount }}</td>
-            <td :class="$style.menu">
-              <modal-menu :id="item.id "
-                          :show="isCurrentModalMenu(item.id)"
-                          @toggle-display="setCurrentModalMenuId"
-                          @delete-item="deleteItem"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <custom-pagination :class="$style.pagination" :buttonsDisplayedCount="5" />
+    <v-data-table :headers="headers" :items="items" hide-default-footer>
+      <template v-slot:[`item.actions`]="{ item }">
+        <modal-menu :id="item.id" />
+      </template>
+    </v-data-table>
+    <v-pagination
+      color="teal"
+      v-if="showPagination"
+      v-model="page"
+      :length="pageCount"
+      :total-visible="7"
+      @input="setPage"
+    />
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import CustomPagination from './CustomPagination.vue';
+import { mapState, mapMutations, mapActions } from 'vuex';
 import ModalMenu from './ModalMenu.vue';
 export default {
   name: 'PaymentsList',
   components: {
-    CustomPagination,
     ModalMenu,
   },
   props: {
@@ -62,57 +44,64 @@ export default {
   },
   data() {
     return {
-      currentModalMenuId: 0,
+      headers: [
+        {
+          text: '#',
+          value: 'id',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: 'Category',
+          value: 'category',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: 'Date',
+          value: 'date',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: 'Amount',
+          value: 'amount',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: ' ',
+          value: 'actions',
+          sortable: false,
+          width: '50px',
+        },
+      ],
     };
+  },
+  computed: {
+    ...mapState(['currentPageNumber', 'pageCount']),
+    page: {
+      get() {
+        return this.currentPageNumber;
+      },
+      set(newPageNumber) {
+        this.setCurrentPageNumber(newPageNumber);
+      },
+    },
+    showPagination() {
+      return this.pageCount > 1;
+    },
   },
   methods: {
     ...mapActions(['deletePageData']),
-    setCurrentModalMenuId(id) {
-      const { isCurrentModalMenu } = this;
-      if (isCurrentModalMenu(id)) {
-        this.currentModalMenuId = 0;
-      } else {
-        this.currentModalMenuId = id;
-      }
-    },
-    isCurrentModalMenu(id) {
-      return this.currentModalMenuId === id;
+    ...mapMutations(['setCurrentPageNumber']),
+    setPage(number) {
+      this.$router.push({ name: 'dashboard', params: { page: number } })
+        .catch(() => {});
     },
     deleteItem(id) {
-      this.currentModalMenuId = 0;
       this.deletePageData(id);
     },
   },
 };
 </script>
-
-<style module lang="scss">
-.list {
-  width: 100%;
-  font-size: 1.25rem;
-  border-collapse: collapse;
-  & thead {
-    color: #fff;
-    background-color: #2aa694;
-  }
-  & tbody {
-    color: #2c3e50;
-    & tr {
-      &:not(:last-child) {
-        border-bottom: 1px solid #c2c2c2;
-      }
-      &:hover {
-        background-color: lighten(#2aa694, 55%);
-      }
-    }
-  }
-  & th,
-  td {
-    padding: 0.5em;
-    text-align: center;
-  }
-}
-.menu {
-  width: min-content;
-}
-</style>

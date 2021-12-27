@@ -1,10 +1,5 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-// import Dashboard from '../views/Dashboard.vue';
-// import About from '../views/About.vue';
-// import NotFound from '../views/NotFound.vue';
-// import Layouts from '../views/Layouts.vue';
-
 
 Vue.use(Router);
 
@@ -12,11 +7,11 @@ const router = new Router({
     mode: 'history',
     routes: [{
             path: '/',
-            redirect: { name: 'dashboardPage', params: { page: 1 } },
+            redirect: { name: 'dashboard', params: { page: 1 } },
         },
         {
             path: '/dashboard',
-            redirect: { name: 'dashboardPage', params: { page: 1 } },
+            redirect: { name: 'dashboard', params: { page: 1 } },
         },
         {
             path: '/add/payment/:category?',
@@ -26,36 +21,20 @@ const router = new Router({
             },
         },
         {
-            path: '/dashboard',
+            path: '/dashboard/:page',
+            name: 'dashboard',
             component: () =>
-                import (
-                    /* webpackChunkName: "Layouts" */
-                    '../views/Layouts.vue'
-                ),
+                import ( /* webpackChunkName: "Dashboard" */ '../views/Dashboard.vue'),
             children: [{
-                path: ':view',
-                name: 'dashboardPage',
-                component: () =>
-                    import ( /* webpackChunkName: "Dashboard" */ '../views/Dashboard.vue'),
-                children: [{
-                    path: 'add/payment/:category',
-                    name: 'addPayment',
-                }, ],
+                path: 'add/payment/:category',
+                name: 'addPayment',
             }, ],
         },
         {
             path: '/about',
+            name: 'about',
             component: () =>
-                import (
-                    /* webpackChunkName: "Layouts" */
-                    '../views/Layouts.vue'
-                ),
-            children: [{
-                path: '',
-                name: 'about',
-                component: () =>
-                    import ( /* webpackChunkName: "About" */ '../views/About.vue'),
-            }, ],
+                import ( /* webpackChunkName: "About" */ '../views/About.vue'),
         },
         {
             path: '/404',
