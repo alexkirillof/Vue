@@ -1,10 +1,36 @@
 <template>
-  <div :class="$style.content">
-    <button :class="$style.showbtn" @click="showForm"  type="button">
-      Add new costs  + 
-    </button>
-    <payments-list :class="$style.list" :items="currentPageData" />
-  </div>
+  <v-container>
+    <h1 class="text-h5 text-sm-h4 mb-8">My personal payments</h1>
+    <v-row>
+      <v-col cols="12" sm="12" md="6">
+        <v-dialog v-model="dialog" max-width="500" persistent>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              class="mb-6"
+              color="teal"
+              dark
+              v-on="on">
+              Add new costs <v-icon>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+          <add-payment-form @close="closeForm" />
+        </v-dialog>
+        <payments-list :items="currentPageData" />
+      </v-col>
+      <v-col
+        class="d-none d-sm-flex justify-center"
+        cols="12"
+        sm="12"
+        md="6"
+      >
+        <DoughnutChart
+          v-if="showChart"
+          :chartData="statData"
+          :options="chartOptions"
+        />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -14,96 +40,140 @@ import {
   mapMutations,
   mapActions,
 } from 'vuex';
+import { DoughnutChart } from 'vue-chart-3';
+import { interpolateSpectral } from 'd3-scale-chromatic';
 import PaymentsList from '../components/PaymentsList.vue';
+import AddPaymentForm from '../components/AddPaymentForm.vue';
 export default {
   name: 'App',
-  computed: {
-    ...mapState(['currentPageNumber']),
-    ...mapGetters(['pageCount', 'currentPageData']),
-  },
   components: {
     PaymentsList,
+    AddPaymentForm,
+    DoughnutChart,
+  },
+  data() {
+    return {
+      dialog: false,
+      colorRangeOptions: {
+        colorStart: 0.3,
+        colorEnd: 1,
+        useEndAsStart: true,
+      },
+      chartOptions: {
+        responsive: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              font: {
+                size: 14,
+              },
+            },
+          },
+          title: {
+            display: true,
+            text: 'COSTS BY CATEGORIES',
+            padding: {
+              top: 12,
+              bottom: 10,
+            },
+            font: {
+              size: 16,
+            },
+          },
+        },
+      },
+    };
+  },
+  computed: {
+    ...mapState(['currentPageNumber', 'pageCount', 'statistics']),
+    ...mapGetters(['currentPageData', 'isPageLoaded']),
+    statData() {
+      const {
+        colorRangeOptions: { colorStart, colorEnd, useEndAsStart },
+        statistics: { data, labels },
+      } = this;
+      const dataLength = data.length;
+      const colorRange = colorEnd - colorStart;
+      const intervalSize = colorRange / dataLength;
+      const colorArray = data.map((el, index) => {
+        let colorPoint = null;
+        if (useEndAsStart) {
+          colorPoint = colorEnd - (index * intervalSize);
+        } else {
+          colorPoint = colorStart + (index * intervalSize);
+        }
+        return interpolateSpectral(colorPoint);
+      });
+      return {
+        labels,
+        datasets: [
+          {
+            data,
+            backgroundColor: colorArray,
+          },
+        ],
+      };
+    },
+    showChart() {
+      return this.statistics?.data?.length > 0;
+    },
   },
   methods: {
-    ...mapMutations(['setCurrentPageNumber', 'addPage', 'initPages']),
-    ...mapActions(['fetchPageCount', 'fetchData', 'fetchCategory']),
- showForm() {
-      const settings = {
-        name: 'PartAddPaymentForm',
-      };
-      this.$modal.show(settings);
+    ...mapMutations(['setCurrentPageNumber']),
+    ...mapActions(['fetchPageCount', 'fetchPage', 'fetchCategory', 'fetchStatistics']),
+    closeForm() {
+      const page = Number(this.$route.params.page);
+      this.dialog = false;
+      this.$router.push({ name: 'dashboard', params: { page } })
+        .catch(() => {});
+    },
+    openForm() {
+      this.dialog = true;
+    },
+    getPage(number) {
+      const {
+        fetchPage,
+        isPageLoaded,
+        pageCount,
+      } = this;
+      if (number > 0 && number <= pageCount) {
+        if (!isPageLoaded(number)) fetchPage(number);
+      } else {
+        this.$router.push({ name: 'dashboard', params: { page: 1 } });
+      }
     },
   },
   created() {
-    this.fetchPageCount()
-      .then((result) => {
-        const { pageCount, initPages } = this;
-        if (pageCount === 0) {
-          initPages(result);
-        }
-      })
-      .then(() => {
-        const { pageCount, currentPageNumber, fetchData } = this;
-        if (currentPageNumber > 0 && pageCount >= currentPageNumber) {
-          fetchData(currentPageNumber);
-        } else {
-          this.$router.push({ name: 'dashboardPage', params: { page: 1 } });
-        }
-      });
-    this.fetchCategory();
+    const { fetchCategory, fetchStatistics } = this;
+    fetchCategory();
+    fetchStatistics();
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) =>  {
-      const { setCurrentPageNumber, showForm } = vm;
-      const { params: { page }, name } = to;
-      if (!Number.isNaN(page) && Number(page) > 0) {
-        setCurrentPageNumber(Number(page));
-      }
-      if (name === 'addPayment') {
-        showForm();
+    next((vm) => {
+      const {
+        getPage,
+        openForm,
+        fetchPageCount,
+        setCurrentPageNumber,
+      } = vm;
+      const page = Number(to.params.page);
+      fetchPageCount()
+        .then(() => {
+          getPage(page);
+          setCurrentPageNumber(page);
+        });
+      if (to.name === 'addPayment') {
+        openForm();
       }
     });
   },
   beforeRouteUpdate(to, from, next) {
-    const { fetchData, setCurrentPageNumber } = this;
-    const { params: { page } } = to;
-    fetchData(Number(page));
-    setCurrentPageNumber(Number(page));
+    const page = Number(to.params.page);
+    if (to.name === 'dashboard') {
+      this.getPage(page);
+    }
     next();
   },
 };
 </script>
-
-<style module lang="scss">
-.content {
-  display: flex;
-  flex-direction: column;
-}
-.formWrapper {
-  display: flex;
-  max-width: 500px;
-
-}
-
-.showbtn{
-  color: #fff;
-  float: left;
-  max-width: 314px;
-  font-size: 20px;
-  background-color:#2aa694;
-  padding: 5px 15px;
-  border: 0;
-  cursor: pointer;
-  margin-bottom: 20px;
-  &:hover {
-     background-color:#a0e9c8;
-  }
-}
-.top{
-  margin-left: 30px;
-  margin-top: 64px;
-  width: 300px;
-  height: 41px;
-}
-
-</style>

@@ -1,26 +1,19 @@
 <template>
-  <div :class="$style.content">
-    <h1>About this page</h1>
-    <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. 
-      Beatae earum qui numquam accusantium ex! </p>
-  </div>
+    <v-container>
+      <h2 class="text-h5 text-sm-h4 mb-8" >About</h2>
+      <p>
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sequi qui id molestias quia.
+        Tempora esse doloremque ratione, illum quaerat laudantium eum quisquam assumenda debitis
+        fugiat iusto quam, neque exercitationem atque!
+      </p>
+    </v-container>
 </template>
 
 <script>
 export default {
   name: 'About',
-  components: {},
-  props: {},
-  data() {
-    return {}
-  },
-  mounted() {},
-  methods: {}
-}
+};
 </script>
 
-<style lang="scss" module>
-.content{
-  margin: 0 auto;
-}
+<style lang="scss">
 </style>

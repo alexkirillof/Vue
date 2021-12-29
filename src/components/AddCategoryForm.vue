@@ -1,13 +1,21 @@
 <template>
-  <form :class="$style.form">
-    <input :class="$style.input" type="text" placeholder="Payment category" v-model="category" />
-    <button :class="$style.addpaybtn" @click="add" type="button"> Add +</button>
-    <button :class="$style.addpaybtn" @click="$emit('close')" type="button">Close </button>
-  </form>
+<v-card class="text-left pa-6">
+  <v-card-title>
+    <span class="text-h5">Add category</span>
+  </v-card-title>
+  <v-card-text>
+    <v-text-field color="teal" v-model="category" label="Category" />
+  </v-card-text>
+  <v-card-actions>
+    <v-btn color="teal" text @click="add">Add</v-btn>
+    <v-spacer />
+    <v-btn color="teal" text @click="close">Close</v-btn>
+  </v-card-actions>
+</v-card>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 export default {
   name: 'AddCategoryForm',
   data() {
@@ -19,48 +27,30 @@ export default {
     ...mapState(['categoryList']),
   },
   methods: {
-    ...mapMutations(['addCategory']),
+    ...mapActions(['addCategory', 'fetchCategory']),
     add() {
-      const { category, categoryList, addCategory } = this;
+      const {
+        category,
+        categoryList,
+        addCategory,
+        fetchCategory,
+      } = this;
       const contains = categoryList.some((item) => item === category);
       if (category && !contains) {
-        addCategory(category);
+        addCategory({ category })
+          .then(({ ok }) => {
+            if (!ok) {
+              return new Error('Category was not added.');
+            }
+            return fetchCategory();
+          })
+          .then(() => this.close());
       }
+    },
+    close() {
+      this.category = '';
+      this.$emit('close');
     },
   },
 };
 </script>
-
-<style module lang="scss">
-.form {
-  display: flex;
-  gap: 350px;
-  width: 100%;
-}
-.input {
-  grid-column: 1/3;
-  padding: 5px 10px;
-  font-size: 24px;
-  color: #2c3e50;
-  border: 1px solid #c2c2c2;
-  background-color: #fff;
-  &:focus {
-    border: 1px solid #2aa694;
-    outline: 1px solid #2aa694;
-  }
-}
-.addpaybtn{
-  align-self: flex-end;
-  color: #fff;
-  max-width: 400px;
-  font-size: 20px;
-  background-color:#2aa694;
-  padding: 5px 3px;
-  margin-bottom: 30px;
-  border: 0;
-  cursor: pointer;
-  &:hover {
-     background-color:#a0e9c8;
-  }
-}
-</style>

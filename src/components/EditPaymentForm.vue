@@ -1,25 +1,88 @@
 <template>
-<div>
-  <form :class="$style.form">
-    <select :class="$style.input" v-model="category">
-      <option v-for="category in categoryList" :value="category" :key="category">
-        {{ category }}
-      </option>
-    </select>
-    <input :class="$style.input" type="text" placeholder="Payment amount" v-model.number="amount" />
-    <input :class="$style.input" type="text" placeholder="Payment date" v-model="date" />
-    <button :class="$style.buttonOk" @click="editPayment">Ok</button>
-    <button :class="$style.buttonCancel" @click="close">Cancel</button>
-  </form>
-</div>
+<v-card class="text-left pa-6">
+  <v-card-title>
+    <span class="text-h5">Edit payment</span>
+  </v-card-title>
+  <v-card-text>
+    <v-container class="pa-0" fluid>
+      <v-row>
+        <v-col cols="12" xs="12" >
+          <v-select
+            color="teal"
+            item-color="teal"
+            v-model="category"
+            label="Category"
+            :items="categoryList"
+          />
+        </v-col>
+        <v-col cols="12" xs="12" >
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :return-value.sync="date"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                color="teal"
+                append-icon="mdi-calendar"
+                v-model="date"
+                label="Date"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              />
+            </template>
+            <v-date-picker
+              color="teal"
+              v-model="date"
+              no-title
+              scrollable
+            >
+              <v-spacer></v-spacer>
+              <v-btn
+                text
+                color="teal"
+                @click="menu = false"
+              >
+                Cancel
+              </v-btn>
+              <v-btn
+                text
+                color="teal"
+                @click="$refs.menu.save(date)"
+              >
+                OK
+              </v-btn>
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" xs="12" >
+          <v-text-field
+            color="teal"
+            v-model="amount"
+            label="Amount"
+            type="number"
+          />
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card-text>
+  <v-card-actions>
+    <v-btn color="teal" text @click="edit">Ok</v-btn>
+    <v-spacer />
+    <v-btn color="teal" text @click="close">Cancel</v-btn>
+  </v-card-actions>
+</v-card>
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 export default {
   name: 'EditPaymentForm',
-  components: {
-  },
   props: {
     id: {
       type: Number,
@@ -31,10 +94,11 @@ export default {
       category: '',
       amount: null,
       date: '',
+      menu: false,
     };
   },
   computed: {
-    ...mapState(['categoryList', 'currentPageNumber']),
+    ...mapState(['categoryList']),
     ...mapGetters(['currentPageData']),
     editablePayment() {
       const { currentPageData, id } = this;
@@ -46,38 +110,34 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['editPageData']),
+    ...mapActions(['editPayment']),
     initField() {
       const { editablePayment: { category, amount, date } } = this;
       this.category = category;
       this.amount = amount;
       this.date = date;
     },
-    close() {
-      this.$modal.hide();
-    },
-    editPayment() {
+    edit() {
       const {
-        currentPageNumber,
         id,
         category,
         amount,
         date,
         currentDate,
-        editPageData,
+        editPayment,
         close,
       } = this;
-      const payload = {
-        page: currentPageNumber,
-        data: {
-          id,
-          category,
-          amount: Number(amount),
-          date: date || currentDate,
-        },
+      const data = {
+        id,
+        category,
+        amount: Number(amount),
+        date: date || currentDate,
       };
-      editPageData(payload);
+      editPayment(data);
       close();
+    },
+    close() {
+      this.$emit('close');
     },
   },
   created() {
@@ -85,30 +145,3 @@ export default {
   },
 };
 </script>
-
-<style module lang="scss">
-.form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-}
-.input {
-  grid-column: 1/3;
-  padding: 0.5em 1em;
-  font-size: 1.25rem;
-  color: #2c3e50;
-  border: 1px solid #c2c2c2;
-  border-radius: 0.5em;
-  background-color: #fff;
-  &:focus {
-    border: 1px solid #2aa694;
-    outline: 1px solid #2aa694;
-  }
-}
-.buttonOk {
-  grid-column: 1/2;
-}
-.buttonCancel {
-  grid-column: 2/3;
-}
-</style>

@@ -1,114 +1,171 @@
 <template>
-  <div :class="$style.wrap">
-     <form :class="$style.form" v-if="showPaymentForm">
-      <input type="date" placeholder="Date" v-model="date" :class="$style.input">
-        <select name="" id=""
-        v-model="category"
-        :class="$style.input"
+<v-card class="text-left pa-6">
+  <v-card-title>
+    <span class="text-h5">Add payment</span>
+  </v-card-title>
+  <v-card-text>
+    <v-container class="pa-0" fluid>
+      <v-row>
+        <v-col cols="12" xs="12" sm="8" >
+          <v-select
+            color="teal"
+            item-color="teal"
+            v-model="category"
+            label="Category"
+            :items="categoryList"
+          />
+        </v-col>
+        <v-col
+          class="d-flex"
+          align-self="center"
+          cols="12"
+          xs="12"
+          sm="4"
         >
-        <option :value="categoryPlaceholder"
-        disabled selected>
-        {{categoryPlaceholder}}</option>
-          <option
-          v-for="category of categoryList"
-          :key="category"
-          :value="category"
-          >{{category}}</option>
-        </select>
-      <input type="number" :placeholder="valuePlaceholder" v-model.number="amount" :class="$style.input">
-      <button @click="addPayment" :class="$style.showbtn">Add  +</button>
-      </form>
-      <add-category-form v-if="showCategoryForm" @close="closeCategoryForm" />
-  </div>
+          <v-dialog v-model="dialog" max-width="500" persistent>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                class="flex-grow-1"
+                color="teal"
+                dark
+                v-on="on"
+              >
+                Add category
+              </v-btn>
+            </template>
+             <add-category-form @close="closeCategoryForm" />
+          </v-dialog>
+        </v-col>
+        <v-col cols="12" xs="12" >
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :return-value.sync="date"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                color="teal"
+                append-icon="mdi-calendar"
+                v-model="date"
+                label="Date"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              />
+            </template>
+            <v-date-picker
+              color="teal"
+              v-model="date"
+              no-title
+              scrollable
+            >
+              <v-spacer></v-spacer>
+              <v-btn
+                text
+                color="teal"
+                @click="menu = false"
+              >
+                Cancel
+              </v-btn>
+              <v-btn
+                text
+                color="teal"
+                @click="$refs.menu.save(date)"
+              >
+                OK
+              </v-btn>
+            </v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="12" xs="12" >
+          <v-text-field
+            color="teal"
+            v-model="amount"
+            label="Amount"
+            type="number"
+          />
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-card-text>
+  <v-card-actions>
+    <v-btn color="teal" text @click="add">Add</v-btn>
+    <v-spacer />
+    <v-btn color="teal" text @click="close">Close</v-btn>
+  </v-card-actions>
+</v-card>
 </template>
 
 <script>
-import {
-  mapState,
-  mapGetters,
-  mapMutations,
-  mapActions,
-} from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
+import AddCategoryForm from './AddCategoryForm.vue';
 export default {
-  name: 'PartAddPaymentForm',
+  name: 'AddPaymentForm',
   components: {
-    AddCategoryForm: () => import(
-      /* webpackChunkName: "AddCategoryForm" */ './AddCategoryForm.vue'
-    ),
+    AddCategoryForm,
   },
   data() {
     return {
       category: '',
       amount: null,
       date: '',
-      showPaymentForm: true,
-      showCategoryForm: false,
+      dialog: false,
+      menu: false,
     };
   },
   computed: {
-    ...mapState(['categoryList', 'itemsPerPage']),
-    ...mapGetters(['pageCount', 'getPageByNumber']),
+    ...mapState(['categoryList', 'pageCount']),
     currentDate() {
       const date = new Date();
-      return date.toLocaleDateString();
+      return date.toISOString().substring(0, 10);
     },
   },
   methods: {
-    ...mapMutations(['addPageData', 'addPage', 'setCurrentPageNumber']),
-    ...mapActions(['fetchData', 'fetchPageCount']),
-    addPayment() {
+    ...mapMutations(['setCurrentPageNumber']),
+    ...mapActions(['addPayment', 'fetchPageCount', 'fetchPage']),
+    add() {
       const {
-        getPageByNumber,
-        addPage,
-        addPageData,
-        fetchData,
-        fetchPageCount,
+        category,
+        amount,
+        date,
+        currentDate,
+        addPayment,
       } = this;
-      fetchPageCount()
-        .then((lastPageNumber) => fetchData(lastPageNumber))
+      const data = {
+        date: date || currentDate,
+        category,
+        amount: Number(amount),
+      };
+      return addPayment(data)
         .then(() => {
-          const {
-            itemsPerPage,
-            pageCount,
-            category,
-            amount,
-            date,
-            currentDate,
-          } = this;
-          const lastPage = getPageByNumber(pageCount);
-          const dataLength = lastPage.data.length;
-          const lastItemId = lastPage.data[dataLength - 1].id;
-          const data = {
-            id: lastItemId + 1,
-            category,
-            amount: Number(amount),
-            date: date || currentDate,
-          };
-          if (dataLength < itemsPerPage) {
-            addPageData({ number: pageCount, data });
-          } else {
-            addPage({ number: pageCount + 1, data: [data] });
-          }
-          return this.$router.push(
-            {
-              name: 'addPayment',
-              params: { page: this.pageCount, category },
-              query: { value: amount },
-            },
-          ).catch(() => {});
-        });
+          this.$router.push({
+            name: 'addPayment',
+            params: { page: this.pageCount, category },
+            query: { value: amount },
+          }).catch(() => {});
+          this.reset();
+        })
+        .catch((err) => console.log(err));
     },
-     openCategoryForm() {
-      this.showPaymentForm = false;
-      this.showCategoryForm = true;
+    reset() {
+      this.category = '';
+      this.amount = null;
+      this.date = '';
+    },
+    close() {
+      this.reset();
+      this.$emit('close');
     },
     closeCategoryForm() {
-      this.showPaymentForm = true;
-      this.showCategoryForm = false;
+      this.dialog = false;
     },
   },
-  mounted() {
-    const { $route: { name, params: { category }, query: { value } } } = this;
+  created() {
+    const { $route: { name, params: { category }, query: { value } }, add, close } = this;
     if (name === 'addPayment') {
       if (category) {
         this.category = category;
@@ -118,46 +175,9 @@ export default {
       }
       this.date = this.currentDate;
       if (category && value) {
-        this.addPayment();
+        add().then(() => close());
       }
     }
   },
 };
 </script>
-
-<style module lang="scss">
-.addpayform {
-  display: flex;
-  flex-direction: column;
-  gap: 20px
-}
-.input {
-  padding: 5px 10px;
-  font-size: 24px;
-  color: #2c3e50;
-  border: 1px solid #c2c2c2;
-  background-color: rgb(245, 239, 239);
-  &:focus {
-    border: 1px solid #2aa694;
-    outline: 1px solid #2aa694;
-  }
-}
-.button {
-  align-self: flex-end;
-  max-width: 150px;
-}
-.showbtn{
-  color: #fff;
-  float: left;
-  max-width: 314px;
-  font-size: 20px;
-  background-color:#2aa694;
-  padding: 5px 15px;
-  border: 0;
-  cursor: pointer;
-  margin-bottom: 20px;
-  &:hover {
-     background-color:#a0e9c8;
-  }
-}
-</style>
