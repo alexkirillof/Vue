@@ -1,18 +1,16 @@
 <template>
 <div :class="$style.wrapper">
   <div :class="$style.content">
-    <close-button :class="$style.button" @close="close()" />
+    <button :class="$style.button" @close="close()" type="button">X</button>
     <component :is="settings.name" :id="settings.id"/>
   </div>
 </div>
 </template>
 
 <script >
-import CloseButton from './CloseButton.vue';
 export default {
   name: 'ModalWindow',
   components: {
-    CloseButton,
     PartAddPaymentForm: () => import(/* webpackChunkName: "PartAddPaymentForm" */ './PartAddPaymentForm.vue'),
     EditPaymentForm: () => import(
       /* webpackChunkName: "EditPaymentForm" */ './EditPaymentForm.vue'
@@ -60,9 +58,9 @@ export default {
   box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.2);
 }
 .button {
-  position: absolute;
-  top: 0;
-  right: 0;
+ float: right;
+ margin-top: -45px;
+ margin-right: -45px;
 }
 </style>
 

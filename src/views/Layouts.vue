@@ -27,12 +27,40 @@
       <div :class="$style.container">
       </div>
     </footer>
+    <transition name="fade">
+      <modal-window v-if="showModal" :settings="settings"/>
+    </transition>
   </div>
 </template>
 
 <script>
 export default {
   name: 'Layouts',
+    components: {
+    ModalWindow: () => import(
+      /* webpackChunkName: "ModalWindow" */ '../components/ModalWindow.vue'
+    ),
+  },
+  data() {
+    return {
+      showModal: false,
+      settings: {},
+    };
+  },
+  beforeMount() {
+    this.$modal.EventBus.$on('show', this.modalOpen);
+    this.$modal.EventBus.$on('hide', this.modalClose);
+  },
+  methods: {
+    modalOpen(settings) {
+      this.settings = settings;
+      this.showModal = true;
+    },
+    modalClose() {
+      this.settings = {};
+      this.showModal = false;
+    },
+  },
 };
 </script>
 

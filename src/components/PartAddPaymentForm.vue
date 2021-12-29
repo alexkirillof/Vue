@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.wrap">
-     <form :class="$style.form" v-if="showPaymentForm">
+     <form :class="$style.addpayform" v-if="showPaymentForm">
       <input type="date" placeholder="Date" v-model="date" :class="$style.input">
         <select name="" id=""
         v-model="category"
@@ -18,7 +18,7 @@
       <input type="number" :placeholder="valuePlaceholder" v-model.number="amount" :class="$style.input">
       <button @click="addPayment" :class="$style.showbtn">Add  +</button>
       </form>
-      <add-category-form v-if="showCategoryForm" @close="closeCategoryForm" />
+      <add-category-form v-if="showCategoryForm" @close="closeCategoryForm" >X</add-category-form>
   </div>
 </template>
 
